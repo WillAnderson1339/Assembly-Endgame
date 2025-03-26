@@ -1,0 +1,90 @@
+header {
+    text-align: center;
+}
+
+header > h1 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #F9F4DA;
+}
+
+header > p {
+    font-size: 0.875rem;
+    max-width: 350px;
+    font-weight: 500;
+    color: #8E8E8E;
+}
+
+section.game-status {
+    background-color: #10A95B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #F9F4DA;
+    border-radius: 4px;
+    margin-block: 30px;
+}
+
+section.game-status > h2 {
+    font-size: 1.25rem;
+    margin: 5px;
+}
+
+section.game-status > p {
+    margin: 5px;
+}
+
+section.language-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    max-width: 350px;
+    margin-bottom: 36px
+}
+
+span.language-chip {
+    border-radius: 3px;
+    padding: 4.5px;
+}
+
+section.word-spaces {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* margin-top: 30px; */
+}
+
+span.letter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 40px;
+    font-size: 1.125rem;
+    border-bottom: 1px solid #F9F4DA;
+    background-color: #323232;
+    /* margin-left: 10px; */
+    /* font-weight: 500; */
+    /* color: #565656; */
+    /* background-color: #565656; */
+    /* border-bottom: #e62525; */
+    /* margin-left: 10px; */
+    /* border-radius: 4px; */
+}
+
+
+/* section.language-chips > button {
+    background-color: #F9F4DA;
+    color: #262626;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+section.language-chips > button:hover {
+    background-color: #F9F4DA;
+    color: #262626;
+} */
