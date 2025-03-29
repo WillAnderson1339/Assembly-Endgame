@@ -88,7 +88,15 @@ function Main() {
         // console.log("isGuessed", isGuessed(letter))
         const bIsGuessed = isGuessed(letter)
         return (
-            <span className={bIsGuessed ? "letter letter-guessed" : "letter"} key={index}>{letter.toUpperCase()}</span>
+            <span 
+                className={
+                    bIsGuessed === true ? "letter letter-guessed" : 
+                    isWin === GAME_LOSE ? "letter letter-game-lost" : 
+                    "letter"
+                } 
+                key={index}>
+                    {letter.toUpperCase()}
+            </span>
         )
     })
 

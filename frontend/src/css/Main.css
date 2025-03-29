@@ -81,8 +81,8 @@ span.letter {
     width: 40px;
     font-size: 1.125rem;
     border-bottom: 1px solid #F9F4DA;
-    background-color: #323232;
-    color: #323232;
+    background-color: rgb(90, 90, 90);
+    color: rgb(90, 90, 90);
     /* margin-left: 10px; */
     /* font-weight: 500; */
     /* color: #565656; */
@@ -95,6 +95,11 @@ span.letter {
 span.letter-guessed {
     /* background-color: #FF5656; */
     color: #F9F4DA;
+}
+
+span.letter-game-lost {
+    /* background-color: #FF5656; */
+    color: crimson;
 }
 
 section.guesses {
