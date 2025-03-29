@@ -17,21 +17,20 @@ const NUM_WORDS_TO_FETCH = 2   // number of words to fetch from API
 
 function Main() {
     const hasRun = useRef(false);
-    // const [words, setWords] = useState(["tart", "cake", "scone"])
     const [words, setWords] = useState([])
-    // const [currentWord, setCurrentWord] = useState(generateWord())
     const [currentWord, setCurrentWord] = useState("")
     const [guesses, setGuesses] = useState(generateGuesses())
     const [attempts, setAttempts] = useState(0)
     const [isWin, setIsWin] = useState(GAME_PLAYING)
     const [needResetCurrentWord, setNeedResetCurrentWord] = useState(false)
 
-    // NOTE: the useEffect callback function can (should) return a function that will be called to clean up the side effect
+    // alternative API for words:
     // https://www.api-ninjas.com/api
     // https://www.api-ninjas.com/api/randomword
     // RestAPI: https://api.api-ninjas.com/v1/randomword
     // the thing: A3Nkc2zuyug49ZdMCycW4g==Z0fnB4D7xj0QLayw
-
+    
+    // NOTE: the useEffect callback function can (should) return a function that will be called to clean up the side effect
     useEffect(() => {
         console.log("in useEffect for Main: ", hasRun.current )
         // using hasRun to ensure this code is only executed once (even in Development mode)
@@ -48,20 +47,7 @@ function Main() {
     useEffect(() => {
         console.log("in useEffect for words")
         if (words !== undefined && words.length !== 0) {
-            // console.log("...words array is empty")
-        // }
-        // else {
-            // console.log("length of words array: ", words.length)
-            // console.log("here are the words", words)
-
-            // choose a new current word from the array
-            // if (currentWord === "") {
-            //     console.log("...currentWord is empty")
-            //     setCurrentWord(generateWord())
-            // }
-
-            if (needResetCurrentWord) {
-                // console.log("...needResetCurrentWord is true")
+            if (needResetCurrentWord === true) {
                 setCurrentWord(generateWord())
                 setNeedResetCurrentWord(false)
             }
@@ -75,21 +61,13 @@ function Main() {
 
     function LoadNewWords() {
         console.log("in function LoadNewWords")
-        // console.log("currentWord: ", currentWord)
-
-        // fetch("https://random-word-api.vercel.app/api?words=10")
-        // const url = "https://random-word-api.vercel.app/api?words=" + NUM_WORDS_TO_FETCH
-        // console.log("URL: ", url)
-        // fetch(url)
 
         setNeedResetCurrentWord(true)
 
         fetch("https://random-word-api.vercel.app/api?words=" + NUM_WORDS_TO_FETCH)
         .then(res => res.json())
-        .then(data => {console.log("returned data: ", data); return data})
+        // .then(data => {console.log("returned data: ", data); return data})
         .then(data => setWords(data))
-        // .then(setCurrentWord(generateWord()))
-        // .then(setNeedResetCurrentWord(false))
         .catch(err => console.error("Fetch error:", err));
     }
 
@@ -116,15 +94,7 @@ function Main() {
 
     const guessElements = guesses.map((guess, index) => {
         return (
-            // <span 
-            //     className={guess.right ? "guess guess-right" : guess.wrong ? "guess guess-wrong" : "guess guess-normal"} 
-            //     // className="guess-right"  
-            //     key={index}
-            //     >
-            //     {guess.letter.toUpperCase()}
-            // </span>
                 <button 
-                    // className="guess" 
                     className={guess.right ? "guess guess-right" : guess.wrong ? "guess guess-wrong" : "guess guess-normal"} 
                     key={index} 
                     onClick={() => handleGuess(guess.letter)}
@@ -137,12 +107,12 @@ function Main() {
     function generateWord() {
         console.log("in function generateWord")
         // console.log("words array: ", words)
+
         if (words === undefined) {
             console.log("words array is undefined")
             return "error"
         }
         else {
-            // console.log("words array is not empty")
             if (words.length === 0) {
                 console.log("words array is empty - fetching new words")
                 LoadNewWords()
@@ -150,26 +120,16 @@ function Main() {
             else {
                 const randomIndex = Math.floor(Math.random() * words.length)
                 const newWord = words[randomIndex]
-                // console.log("newWord: ", newWord, "randomIndex : ", randomIndex)
                 
-                // setWords(prev => prev.splice(randomIndex, 1))
                 let currentWords = words
-                // console.log("words array BEFORE splice: ", currentWords)
+                // console.log("currentWords: ", currentWords)
+                // console.log("randomIndex: ", randomIndex)
                 currentWords.splice(randomIndex, 1)
-                // console.log("newWords array AFTER splice: ", currentWords)
                 setWords (currentWords)
-                // console.log("words array after splice: ", words);   // cannot do this!!! words array not updated yet!
-    
-                // if (words.length === 0) {
-                //     console.log("words array is empty - fetching new words")
-                //     LoadNewWords()
-                // }
-    
-                // return words[randomIndex]
-                console.log("new word: ", newWord)
+                
+                // console.log("new word: ", newWord)
                 return newWord
             }
-
         }
     }
 
@@ -207,7 +167,6 @@ function Main() {
         let bWin = false
         if (currentWord !== undefined && currentWord !== "") {
             bWin = currentWord.split("").every(letter => isGuessed(letter))
-            // console.log("bWin =", bWin)
             if (currentWord === "") {
                 console.log("..THE currentWord is empty")
             }
@@ -217,7 +176,6 @@ function Main() {
             }
         } 
 
-        // console.log("returning bWin: ", bWin)
         return bWin
     }
 
@@ -228,7 +186,7 @@ function Main() {
     }
 
     function handleGuess(letter) {
-        console.log("in handleGuess: ", letter)
+        // console.log("in handleGuess: ", letter)
         if (isGuessed(letter) === false) {
             let attribute = "default"
             isInWord(letter) ? (attribute = "right") : (attribute = "wrong", setAttempts(attempts + 1))
@@ -241,14 +199,6 @@ function Main() {
                 )
                 );
         }
-        // if (words === undefined || words.length === 0) {
-        //     console.log("...Words array is empty")
-        // }
-        // else {
-        //     console.log("length of words array: ", words.length)
-        //     console.log("the words array: ", words)
-        //     console.log("the current word: ", currentWord)
-        // }
     }
 
     function handleNewGame() {
