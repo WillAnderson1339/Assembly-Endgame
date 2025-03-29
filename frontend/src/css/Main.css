@@ -32,11 +32,15 @@ section.game-status-playing {
 
 section.game-status-win {
     background-color: #10A95B;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
 }
 
 
 section.game-status-lose {
     background-color: #e96565;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
 }
 
 section.game-status > h2 {
