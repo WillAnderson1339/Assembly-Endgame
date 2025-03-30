@@ -1,13 +1,17 @@
 import { useRef, useState, useEffect } from 'react'
 
 import {languages} from '../data/languages'
+// console.log("Languages:")
 // console.log(languages)
 // import {words} from '../data/words'
 // console.log(words)
+import {hints} from '../data/hints'
+// console.log(hints)
 import '../css/Main.css'
 
 // https://www.npmjs.com/package/clsx
-import { clsx } from 'clsx';
+import { clsx } from 'clsx'
+import Confetti from 'react-confetti'
 
 
 // game states
@@ -18,6 +22,7 @@ const GAME_LOSE = 2
 // constants
 const MAX_ATTEMPTS = 9         // number of attempts per game
 const NUM_WORDS_TO_FETCH = 2   // number of words to fetch from API
+const HINT_DISPLAY_TIME = 3000  // show the hint for X milliseconds
 
 function Main() {
     const hasRun = useRef(false);
@@ -27,6 +32,7 @@ function Main() {
     const [attempts, setAttempts] = useState(0)
     const [isWin, setIsWin] = useState(GAME_PLAYING)
     const [needResetCurrentWord, setNeedResetCurrentWord] = useState(false)
+    const [showHint, setShowHint] = useState(false)
 
     // alternative API for words:
     // https://www.api-ninjas.com/api
@@ -36,7 +42,7 @@ function Main() {
     
     // NOTE: the useEffect callback function can (should) return a function that will be called to clean up the side effect
     useEffect(() => {
-        console.log("in useEffect for Main: ", hasRun.current )
+        // console.log("in useEffect for Main: ", hasRun.current )
         // using hasRun to ensure this code is only executed once (even in Development mode)
         // NOTE: since React 18 the Strict Mode will call the useEffect twice in development mode to help find bugs
         if (hasRun.current === false) {
@@ -49,7 +55,7 @@ function Main() {
     }, [])
 
     useEffect(() => {
-        console.log("in useEffect for words")
+        // console.log("in useEffect for words")
         if (words !== undefined && words.length !== 0) {
             if (needResetCurrentWord === true) {
                 setCurrentWord(generateWord())
@@ -64,7 +70,7 @@ function Main() {
     }, [guesses])
 
     function LoadNewWords() {
-        console.log("in function LoadNewWords")
+        // console.log("in function LoadNewWords")
 
         setNeedResetCurrentWord(true)
 
@@ -143,7 +149,7 @@ function Main() {
     })
 
     function generateWord() {
-        console.log("in function generateWord")
+        // console.log("in function generateWord")
         // console.log("words array: ", words)
 
         if (words === undefined) {
@@ -227,7 +233,23 @@ function Main() {
         // console.log("in handleGuess: ", letter)
         if (isGuessed(letter) === false) {
             let attribute = "default"
-            isInWord(letter) ? (attribute = "right") : (attribute = "wrong", setAttempts(attempts + 1))
+
+            /*
+            isInWord(letter) ? 
+            (attribute = "right") : 
+            (attribute = "wrong", setAttempts(attempts + 1), setShowHint(true))
+            */
+
+            if (isInWord(letter) === true) {
+                attribute = "right"
+            }
+            else {
+                attribute = "wrong"
+                setAttempts(attempts + 1)
+
+                setShowHint(true)
+                setTimeout(() => setShowHint(false), HINT_DISPLAY_TIME);
+            }
 
             setGuesses(prevGuessArray =>
                 prevGuessArray.map(guess =>
@@ -247,24 +269,68 @@ function Main() {
         setAttempts(0)
     }
 
+    function getHint() {
+        // console.log("in function getHint")
+        const randomIndex = Math.floor(Math.random() * hints.length)
+        return hints[randomIndex]
+    }
+
+    function renderGameStatus() {
+        if (isWin === GAME_WIN) {
+            return (
+                <>
+                    <h2 onClick={handleNewGame}>"You Win!"</h2>
+                    <p>"Well Done! 🎉  Click to play again"</p>
+                </>
+            )
+        }
+        else if (isWin === GAME_LOSE) {
+            return (
+                <>
+                    <h2 onClick={handleNewGame}>"You Lose"</h2>
+                    <p>"Too bad 😟  Click to play again"</p>
+                </>
+            )
+        }
+        else {
+            if (showHint === false) {
+                return (
+                    <>
+                        <h2 onClick={handleNewGame}>Make guesses on the keyboard below</h2>
+                        <p>You have {(MAX_ATTEMPTS - attempts -1)} guesses left</p>
+                    </>
+                )
+            }
+            else {
+                return (
+                    <>
+                        <h2 onClick={handleNewGame}>The world has lost {languages[attempts-1].name} coding</h2>
+                        <p>Hint: {getHint()}</p>
+                    </>
+                )
+            }
+        }
+
+    }
+
     return (
         <>
             <main>
                 <header>
-                    <h1>Assebmly Endgame</h1>
+                    <h1>Assembly Endgame</h1>
                     <p>Guess the word within 8 attempts to keep the prrogramming world safe from Assembly!</p>
                 </header>
-                <section className={isWin === GAME_PLAYING ? "game-status game-status-playing" : isWin === GAME_WIN ? "game-status game-status-win" : "game-status game-status-lose"}>
-                    <h2 onClick={handleNewGame}>{
-                        isWin === GAME_PLAYING ? "Make guesses on the keyboard below" : 
-                        isWin === GAME_WIN ? "You Win!" : 
-                        "You Lose!"}
-                    </h2>
-                    <p>{
-                        isWin === GAME_PLAYING ? "You have " + (MAX_ATTEMPTS - attempts -1) + " guesses left" : 
-                        isWin === GAME_WIN ? "Well Done! 🎉  Click to play again" : 
-                        "Too bad 😟 Click to play again"}
-                    </p>
+                {isWin === GAME_WIN && <Confetti />}
+                <section 
+                // className={isWin === GAME_PLAYING ? "game-status game-status-playing" : isWin === GAME_WIN ? "game-status game-status-win" : "game-status game-status-lose"}>
+                    className={clsx("game-status", {
+                        "game-status-win" : isWin === GAME_WIN,
+                        "game-status-lose": isWin === GAME_LOSE,
+                        "game-status-hint" : (showHint === true && isWin !== GAME_LOSE),
+                        "game-status-playing" : isWin === GAME_PLAYING,
+                    })}
+                >
+                    {renderGameStatus()}
                 </section>
                 <section className="language-chips">
                     {languageElements}

@@ -43,6 +43,13 @@ section.game-status-lose {
     transition: background-color 0.3s ease-in-out;
 }
 
+section.game-status-hint {
+    background-color: purple;
+    color: black
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
 section.game-status > h2 {
     font-size: 1.25rem;
     margin: 5px;
