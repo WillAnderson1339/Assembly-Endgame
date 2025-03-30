@@ -6,6 +6,10 @@ import {languages} from '../data/languages'
 // console.log(words)
 import '../css/Main.css'
 
+// https://www.npmjs.com/package/clsx
+import { clsx } from 'clsx';
+
+
 // game states
 const GAME_PLAYING = 0
 const GAME_WIN = 1
@@ -75,11 +79,16 @@ function Main() {
         const styles = {
             backgroundColor: language.backgroundColor,
             color: language.color,
-            display: index < attempts ? "none" : ""
+            // display: index < attempts ? "none" : ""
         }
 
+        const className = clsx("language-chip", {
+            "lost": index < attempts,
+        })
+
         return (
-            <span className="language-chip" style={styles} key={index}>{language.name}</span>
+            // <span className="language-chip" style={styles} key={index}>{language.name}</span>
+            <span className={className} style={styles} key={index}>{language.name}</span>
         )
     })
 
@@ -89,11 +98,15 @@ function Main() {
         const bIsGuessed = isGuessed(letter)
         return (
             <span 
-                className={
-                    bIsGuessed === true ? "letter letter-guessed" : 
-                    isWin === GAME_LOSE ? "letter letter-game-lost" : 
-                    "letter"
-                } 
+                // className={
+                //     bIsGuessed === true ? "letter letter-guessed" : 
+                //     isWin === GAME_LOSE ? "letter letter-game-lost" : 
+                //     "letter"
+                // } 
+                className={clsx("letter", {
+                    "letter-guessed": bIsGuessed,
+                    "letter-game-lost": (isWin === GAME_LOSE && bIsGuessed === false),
+                })}
                 key={index}>
                     {letter.toUpperCase()}
             </span>
@@ -101,15 +114,32 @@ function Main() {
     })
 
     const guessElements = guesses.map((guess, index) => {
+        // the tutorial shows that the class names do not need the quotes around them, but I found that they do
+        const className=clsx("guess", {
+            "guess-right": guess.right,
+            "guess-wrong": guess.wrong,
+            "guess-normal": !guess.right && !guess.wrong,
+        })
+
         return (
-                <button 
-                    className={guess.right ? "guess guess-right" : guess.wrong ? "guess guess-wrong" : "guess guess-normal"} 
-                    key={index} 
-                    onClick={() => handleGuess(guess.letter)}
-                    >
-                    {guess.letter.toUpperCase()}
-                </button>
-            )
+            <button 
+                // className={
+                // guess.right ? "guess guess-right" :
+                //  guess.wrong ? "guess guess-wrong" : 
+                // "guess guess-normal"
+                //} 
+                // className={clsx("guess", {
+                //     "guess-right": guess.right,
+                //     "guess-wrong": guess.wrong,
+                //     "guess-normal": !guess.right && !guess.wrong,
+                // })}
+                className={className}
+                key={index} 
+                onClick={() => handleGuess(guess.letter)}
+                >
+                {guess.letter.toUpperCase()}
+            </button>
+        )
     })
 
     function generateWord() {
@@ -232,8 +262,8 @@ function Main() {
                     </h2>
                     <p>{
                         isWin === GAME_PLAYING ? "You have " + (MAX_ATTEMPTS - attempts -1) + " guesses left" : 
-                        isWin === GAME_WIN ? "Well Done! 🎉" : 
-                        "Too bad 😟"}
+                        isWin === GAME_WIN ? "Well Done! 🎉  Click to play again" : 
+                        "Too bad 😟 Click to play again"}
                     </p>
                 </section>
                 <section className="language-chips">
@@ -243,7 +273,6 @@ function Main() {
                     {letterElements}
                 </section>
                 <section className="guesses">
-                    {/* <h2>Guesses</h2> */}
                     {guessElements}
                 </section>
             </main>
