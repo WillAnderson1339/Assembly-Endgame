@@ -9,9 +9,10 @@ import {hints} from '../data/hints'
 // console.log(hints)
 import '../css/Main.css'
 
-// https://www.npmjs.com/package/clsx
-import { clsx } from 'clsx'
+
+import { clsx } from 'clsx'             // https://www.npmjs.com/package/clsx
 import Confetti from 'react-confetti'
+import { Tooltip } from 'react-tooltip' // https://www.npmjs.com/package/react-tooltip
 
 
 // game states
@@ -28,7 +29,7 @@ function Main() {
     const hasRun = useRef(false);
     const [words, setWords] = useState([])
     const [currentWord, setCurrentWord] = useState("")
-    const [guesses, setGuesses] = useState(generateGuesses())
+    const [guesses, setGuesses] = useState(() => generateGuesses()) // lazy state initialization to ensure is only callled once
     const [attempts, setAttempts] = useState(0)
     const [isWin, setIsWin] = useState(GAME_PLAYING)
     const [needResetCurrentWord, setNeedResetCurrentWord] = useState(false)
@@ -142,6 +143,9 @@ function Main() {
                 className={className}
                 key={index} 
                 onClick={() => handleGuess(guess.letter)}
+                disabled={isWin === GAME_WIN || isWin === GAME_LOSE}
+                aria-label={'Letter ${letter}'}
+                aria-disabled={isWin === GAME_WIN || isWin === GAME_LOSE}   // shoud add check if letter has been chosen so assisted technology knows it cannot be chosen again
                 >
                 {guess.letter.toUpperCase()}
             </button>
@@ -231,7 +235,7 @@ function Main() {
 
     function handleGuess(letter) {
         // console.log("in handleGuess: ", letter)
-        if (isGuessed(letter) === false) {
+        if (isWin === GAME_PLAYING && isGuessed(letter) === false) {
             let attribute = "default"
 
             /*
@@ -279,7 +283,7 @@ function Main() {
         if (isWin === GAME_WIN) {
             return (
                 <>
-                    <h2 onClick={handleNewGame}>"You Win!"</h2>
+                    <h2 onClick={handleNewGame}>You Win!</h2>
                     <p>"Well Done! 🎉  Click to play again"</p>
                 </>
             )
@@ -287,7 +291,7 @@ function Main() {
         else if (isWin === GAME_LOSE) {
             return (
                 <>
-                    <h2 onClick={handleNewGame}>"You Lose"</h2>
+                    <h2 onClick={handleNewGame}>You Lose</h2>
                     <p>"Too bad 😟  Click to play again"</p>
                 </>
             )
@@ -297,7 +301,7 @@ function Main() {
                 return (
                     <>
                         <h2 onClick={handleNewGame}>Make guesses on the keyboard below</h2>
-                        <p>You have {(MAX_ATTEMPTS - attempts -1)} guesses left</p>
+                        <p>You have {(MAX_ATTEMPTS - attempts)} guesses left</p>
                     </>
                 )
             }
@@ -320,9 +324,11 @@ function Main() {
                     <h1>Assembly Endgame</h1>
                     <p>Guess the word within 8 attempts to keep the prrogramming world safe from Assembly!</p>
                 </header>
-                {isWin === GAME_WIN && <Confetti />}
+                {isWin === GAME_WIN && <Confetti recycle={false} numberOfPieces={400}/>}
                 <section 
-                // className={isWin === GAME_PLAYING ? "game-status game-status-playing" : isWin === GAME_WIN ? "game-status game-status-win" : "game-status game-status-lose"}>
+                    aria-live="polite"
+                    role="status"
+                    // className={isWin === GAME_PLAYING ? "game-status game-status-playing" : isWin === GAME_WIN ? "game-status game-status-win" : "game-status game-status-lose"}>
                     className={clsx("game-status", {
                         "game-status-win" : isWin === GAME_WIN,
                         "game-status-lose": isWin === GAME_LOSE,
@@ -340,6 +346,17 @@ function Main() {
                 </section>
                 <section className="guesses">
                     {guessElements}
+                </section>
+                <section className="sr-only" aria-live="polite" role="status">
+                    /**/
+                    <p>Current word: {
+                        //  should also add a <p> element that reads out the letter that was clicked and gives feedback on if it was right or wrong
+                        // see 14:55:00 in the tutorial
+                        currentWord !== undefined && currentWord.split("").map(letter =>     // NOTE: this reads all letters in the word - need to change to just the letters that have been guessed 
+                            isInWord(letter) ? 
+                            letter + "." : 
+                            "blank."
+                        ).join(" ")}</p>
                 </section>
             </main>
         </>

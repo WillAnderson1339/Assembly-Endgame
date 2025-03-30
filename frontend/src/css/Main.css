@@ -45,7 +45,8 @@ section.game-status-lose {
 
 section.game-status-hint {
     background-color: purple;
-    color: black
+    /* color: black; */
+    /* font-style: italic; */
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
 }
@@ -146,8 +147,14 @@ section.guesses {
     cursor: pointer;
 }
 
+.guesses > button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 .guess-normal {
     background-color: #CCCCCC;
+    /* background-color: #FCBA29; */
     color: #444444;
 }
 
@@ -159,4 +166,16 @@ section.guesses {
 .guess-wrong {
     background-color: #FF395B;
     color: #F9F4DA;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
 }
